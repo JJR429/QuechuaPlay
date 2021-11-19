@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Quechua Rank - Play</title>
+        <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/3600/3600943.png" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Google fonts-->
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,600;1,600&amp;display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,500;0,600;0,700;1,300;1,500;1,600;1,700&amp;display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;1,400&amp;display=swap" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../css/styles.css" rel="stylesheet" />
+
+        <!-- development version, includes helpful console warnings -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <style>
+            .rank-header {
+                font-size: 30px;
+                font-weight: bold;
+            }
+            .content-game img {
+                height: 300px;
+                width: 300px;
+                object-fit: cover;
+                border-radius: 25px;
+                border: solid 5px#ccc;
+            }
+            .m-flex {
+                display: flex;
+                justify-content: space-evenly;
+            }
+            .last-flex {
+                display: flex;
+                justify-content: end;
+            }
+            .m-flex-header {
+                display: flex;
+                justify-content: space-between;
+            }
+            .m-flex-header .time {
+                font-size: 20px;
+            }
+            .m-flex-header .level {
+                font-size: 20px;
+            }
+        </style>
+    </head>
+    <body id="page-top">
+        <div id="app">
+            <!-- Navigation-->
+            <nav class="navbar navbar-expand-lg navbar-light shadow-sm" id="mainNav">
+                <div class="container px-5">
+                    <a class="navbar-brand fw-bold" href="#page-top">Quechua Rank</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                        Menu
+                        <i class="bi-list"></i>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarResponsive">
+                        <ul class="navbar-nav ms-auto me-4 my-3 my-lg-0">
+                            <li class="nav-item"><span class="rank-header">0</span> Puntos</li>
+                        </ul>
+                        <button class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                            <span class="d-flex align-items-center">
+                                <i class="bi-person me-2"></i>
+                                <span class="small">Beta</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+            <!-- Mashead header-->
+            <header class="masthead" id="content">
+
+                <div v-if="content==1">
+                    <div class="container px-5" id="page-1">
+                        <div class="row gx-5 align-items-center">
+                            <div class="col-lg-6">
+                                <!-- Mashead text and app badges-->
+                                <div class="mb-5 mb-lg-0 text-center text-lg-start">
+                                    <h1 class="display-1 lh-1 mb-3">Empieza a jugar</h1>
+                                    <p class="lead fw-normal text-muted mb-5">10 preguntas en 1 minuto. Nivel Básico.</p>
+                                    <div class="d-flex flex-column flex-lg-row align-items-center">
+                                        <button v-on:click="changeContent(2)" class="btn btn-primary rounded-pill px-4 mb-2 mb-lg-0 py-3" href="#!">
+                                            <i class="bi-controller"></i> Empezar Nivel Básico</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <!-- Masthead device mockup feature-->
+                            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="content==2">
+                    <div class="container px-5" id="page-play" v-if="!response.error">
+                        <div class="row gx-5 align-items-center">
+                            <div class="col-lg-12">
+                                <!-- Mashead text and app badges-->
+                                <div class="mb-5 mb-lg-0 text-center">
+                                    <div class="m-flex-header">
+                                        <span class="level mb-3" v-if="response.data[q_index].level==1">Nivel: Básico</span>
+                                        <span class="level mb-3" v-if="response.data[q_index].level==2">Nivel: Intermedio</span>
+                                        <span class="level mb-3" v-if="response.data[q_index].level==3">Nivel: Avanzado</span>
+                                        <h2 class="mb-3"><span>{{q_index+1}}.</span> {{response.data[q_index].question}}</h2>
+                                        <span class="time mb-3">Tiempo: {{ timerCount }}</h2>
+                                    </div>
+                                    <div class="content-game" v-html="response.data[q_index].content">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="m-flex mt-4" v-if="ramdom_options==1">
+                                        <button v-on:click="answerQuestion(q_index,0, response.data[q_index].points, 1)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_1.isCorrect, 'btn-danger': btn_1.notCorrect, 'btn-outline-secondary': btn_1.normal }"> {{response.data[q_index].option_0}}</button>
+                                        <button v-on:click="answerQuestion(q_index,1, response.data[q_index].points, 2)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_2.isCorrect, 'btn-danger': btn_2.notCorrect, 'btn-outline-secondary': btn_2.normal}"> {{response.data[q_index].option_1}}</button>
+                                        <button v-on:click="answerQuestion(q_index,2, response.data[q_index].points, 3)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_3.isCorrect, 'btn-danger': btn_3.notCorrect , 'btn-outline-secondary': btn_3.normal}"> {{response.data[q_index].option_2}}</button>
+                                    </div>
+                                    <div class="m-flex mt-4" v-if="ramdom_options==2">
+                                        <button v-on:click="answerQuestion(q_index,0, response.data[q_index].points, 1)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_1.isCorrect, 'btn-danger': btn_1.notCorrect, 'btn-outline-secondary': btn_1.normal }"> {{response.data[q_index].option_0}}</button>
+                                        <button v-on:click="answerQuestion(q_index,2, response.data[q_index].points, 3)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_3.isCorrect, 'btn-danger': btn_3.notCorrect , 'btn-outline-secondary': btn_3.normal}"> {{response.data[q_index].option_2}}</button>
+                                        <button v-on:click="answerQuestion(q_index,1, response.data[q_index].points, 2)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_2.isCorrect, 'btn-danger': btn_2.notCorrect, 'btn-outline-secondary': btn_2.normal}"> {{response.data[q_index].option_1}}</button>
+                                    </div>
+
+                                    <div class="m-flex mt-4" v-if="ramdom_options==3">
+                                        <button v-on:click="answerQuestion(q_index,1, response.data[q_index].points, 2)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_2.isCorrect, 'btn-danger': btn_2.notCorrect, 'btn-outline-secondary': btn_2.normal}"> {{response.data[q_index].option_1}}</button>
+                                        <button v-on:click="answerQuestion(q_index,0, response.data[q_index].points, 1)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_1.isCorrect, 'btn-danger': btn_1.notCorrect, 'btn-outline-secondary': btn_1.normal }"> {{response.data[q_index].option_0}}</button>
+                                        <button v-on:click="answerQuestion(q_index,2, response.data[q_index].points, 3)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_3.isCorrect, 'btn-danger': btn_3.notCorrect , 'btn-outline-secondary': btn_3.normal}"> {{response.data[q_index].option_2}}</button>
+                                    </div>
+
+                                    <div class="m-flex mt-4" v-if="ramdom_options==4">
+                                        <button v-on:click="answerQuestion(q_index,1, response.data[q_index].points, 2)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_2.isCorrect, 'btn-danger': btn_2.notCorrect, 'btn-outline-secondary': btn_2.normal}"> {{response.data[q_index].option_1}}</button>
+                                        <button v-on:click="answerQuestion(q_index,2, response.data[q_index].points, 3)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_3.isCorrect, 'btn-danger': btn_3.notCorrect , 'btn-outline-secondary': btn_3.normal}"> {{response.data[q_index].option_2}}</button>
+                                        <button v-on:click="answerQuestion(q_index,0, response.data[q_index].points, 1)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_1.isCorrect, 'btn-danger': btn_1.notCorrect, 'btn-outline-secondary': btn_1.normal }"> {{response.data[q_index].option_0}}</button>
+                                    </div>
+                                    <div class="m-flex mt-4" v-if="ramdom_options==5">
+                                        <button v-on:click="answerQuestion(q_index,2, response.data[q_index].points, 3)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_3.isCorrect, 'btn-danger': btn_3.notCorrect , 'btn-outline-secondary': btn_3.normal}"> {{response.data[q_index].option_2}}</button>
+                                        <button v-on:click="answerQuestion(q_index,0, response.data[q_index].points, 1)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_1.isCorrect, 'btn-danger': btn_1.notCorrect, 'btn-outline-secondary': btn_1.normal }"> {{response.data[q_index].option_0}}</button>
+                                        <button v-on:click="answerQuestion(q_index,1, response.data[q_index].points, 2)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_2.isCorrect, 'btn-danger': btn_2.notCorrect, 'btn-outline-secondary': btn_2.normal}"> {{response.data[q_index].option_1}}</button>
+                                    </div>
+                                    <div class="m-flex mt-4" v-if="ramdom_options==6">
+                                        <button v-on:click="answerQuestion(q_index,2, response.data[q_index].points, 3)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_3.isCorrect, 'btn-danger': btn_3.notCorrect , 'btn-outline-secondary': btn_3.normal}"> {{response.data[q_index].option_2}}</button>
+                                        <button v-on:click="answerQuestion(q_index,1, response.data[q_index].points, 2)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_2.isCorrect, 'btn-danger': btn_2.notCorrect, 'btn-outline-secondary': btn_2.normal}"> {{response.data[q_index].option_1}}</button>
+                                        <button v-on:click="answerQuestion(q_index,0, response.data[q_index].points, 1)" class="btn rounded-pill px-4 mb-2 mb-lg-0 py-2" v-bind:class="{ 'btn-success': btn_1.isCorrect, 'btn-danger': btn_1.notCorrect, 'btn-outline-secondary': btn_1.normal }"> {{response.data[q_index].option_0}}</button>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="last-flex mt-4">
+                                        <button v-if="q_index<response.data.length-1" v-on:click="nextQuestion()" class="btn btn-outline-primary rounded-pill px-4 mb-2 mb-lg-0 py-2" href="#!">
+                                            <i class="bi-arrow-right"></i> Siguiente pregunta
+                                        </button>
+                                        <button v-else v-on:click="nextQuestion()" class="btn btn-primary rounded-pill px-4 mb-2 mb-lg-0 py-2" href="#!">
+                                            <i class="bi-check-all"></i> Terminar y calificar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <!-- Masthead device mockup feature-->
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div v-if="content==3">
+                    <div class="container px-5" id="page-play">
+                        <div class="row gx-5 align-items-center">
+                            <div class="col-lg-12">
+                                <!-- Mashead text and app badges-->
+                                <div class="mb-5 mb-lg-0 text-center">
+                                    <div class="row">
+                                        <h1>Ganaste: {{getPoints()}} Puntos</h1>
+                                        <h3>Respondiste {{getCorrectAnswers()}} preguntas correctamente</h3>
+                                        <p>Sigue jugando y consigue más puntos.</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12  text-center">
+                
+                                    <button v-on:click="changeContent(1)" class="btn btn-primary rounded-pill px-4 mb-2 mb-lg-0 py-3">
+                                        <i class="bi-controller"></i> Jugar de nuevo</button>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <!-- Masthead device mockup feature-->
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </header>
+        </div>
+
+        <!-- Quote/testimonial aside-->
+        <aside class="text-center bg-gradient-primary-to-secondary" id="nosotros">
+            <div class="container px-5">
+                <div class="row gx-5 justify-content-center">
+                    <div class="col-xl-8">
+                        <div class="h2 fs-1 text-white mb-4">"Esta es una version Beta, aun no puedes acumular puntos. Pero si puedes tomar una captura de pantalla y enviarselo a tus amigos."</div>
+                        <img src="../assets/img/tnw-logo.svg" alt="..." style="height: 3rem" />
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- Footer-->
+        <footer class="bg-black text-center py-5">
+            <div class="container px-5">
+                <div class="text-white-50 small">
+                    <div class="mb-2">&copy; QuechuaRank 2021. All Rights Reserved.</div>
+                    <a href="#!">Privacy</a>
+                    <span class="mx-1">&middot;</span>
+                    <a href="#!">Terms</a>
+                    <span class="mx-1">&middot;</span>
+                    <a href="#!">FAQ</a>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="../js/main.js"></script>
+
+
+    </body>
+</html>
